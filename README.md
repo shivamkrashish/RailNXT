@@ -29,19 +29,6 @@ RailNXT is a futuristic web-based smart railway management system that aims to m
 
 ---
 
-
-## 📸 Screenshots
-
-### 🏠 Home Page with Smart Route Finder
-![Home Page](./frontend/screenshots/Screenshot-Home.png)
-
-### 🚉 Smart Train Search with Availability
-![Search Page](./frontend/screenshots/Screenshot-Search.png)
-
-### 🗺️ Google Maps-based Train Tracking
-![Tracking Page](./frontend/screenshots/Screenshot-Map.png)
-
-
 ## 📦 Installation & Setup
 
 ```bash
