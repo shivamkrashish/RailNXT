@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>RailNXT - Smart Train Search</title>
+
+  <!-- Tailwind Config -->
+  <script>
+    tailwind = {
+      config: {
+        darkMode: 'class'
+      }
+    }
+  </script>
+
+  <!-- Tailwind CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-gray-50 text-gray-800 min-h-screen transition-colors duration-300" id="body"></body>
+
+  <!-- Header -->
+  <header class="fixed top-0 left-0 w-full bg-blue-900 text-white p-5 flex flex-col sm:flex-row justify-between items-center shadow-md z-10">
+    <h1 class="text-3xl sm:text-4xl font-bold">🚆RailNXT</h1>
+    <nav class="space-x-3 flex flex-wrap justify-center sm:justify-end">
+      <a href="index.html" class="hover:underline font-semibold">Home</a>
+      <a href="track.html" class="hover:underline">Track Train</a>
+      <button id="darkModeToggle" class="bg-white text-blue-900 px-2 py-1 rounded mt-2 sm:mt-0">🌙</button>
+
+    </nav>
+  </header>
+
+  <br><br><br><br><br>
+
+  <div class="container mx-auto px-4 py-10" id="gray">
+    <h1 class="text-3xl font-bold mb-6 text-center">🔍 Search Smart Trains</h1>
+
+    <!-- Search Panel -->
+    <div class="max-w-2xl mx-auto bg-gray-400 dark:bg-gray-800 p-4 rounded shadow space-y-4">
+      <div class="grid sm:grid-cols-2 gap-4">
+        <div>
+          <label for="sourceInput" class="block font-semibold mb-1">Source Station</label>
+          <input type="text" id="sourceInput" class="w-full p-2 border bg-blue-700 text-white rounded dark:bg-gray-700 dark:text-white" placeholder="e.g. Delhi" list="stations"/>
+        </div>
+        <div>
+          <label for="destInput" class="block font-semibold mb-1">Destination Station</label>
+          <input type="text" id="destInput" class="w-full p-2 border bg-blue-700 rounded text-white dark:bg-gray-700 dark:text-white" placeholder="e.g. Mumbai" list="stations"/>
+                <button id="swapBtn" class=" bg-yellow-500 hover:bg-yellow-700 text-white px-4 py-1 rounded" style="margin-left: -32px; margin-top: 20px;">🔁</button>
+        </div>
+      </div>
+      <div class="grid sm:grid-cols-2 gap-4">
+        <div>
+          <label for="dateInput" class="block font-semibold mb-1">📅 Travel Date</label>
+          <input type="date" id="dateInput" class="w-full p-2 text-white rounded bg-blue-700 dark:bg-gray-700 dark:text-white"/>
+        </div>
+        <div>
+          <label for="trainType" class="block font-semibold mb-1">📊 Train Type</label>
+          <select id="trainType" class="w-full p-2 rounded text-white  bg-blue-700 dark:bg-gray-700 dark:text-white">
+            <option value="all">All</option>
+            <option value="rajdhani">Rajdhani</option>
+            <option value="vande bharat">Vande Bharat</option>
+            <option value="express">Express</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-4">
+        <button id="startVoice" class="bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded">🎤 Speak</button>
+        <span id="voiceText" class="text-sm text-gray-100 dark:text-gray-300"></span>
+      </div>
+
+      <button id="searchTrains" class="bg-blue-600 hover:bg-blue-700 text-white w-full py-2 rounded font-semibold">🔎 Search Trains</button>
+    </div>
+
+    <!-- Loader -->
+    <div id="loader" class="flex justify-center mt-6 hidden">
+      <div class="animate-spin rounded-full h-10 w-10 border-t-4 border-blue-500"></div>
+    </div>
+
+    <!-- Results -->
+    <div id="trainResults" class="mt-6 grid gap-4 max-w-2xl mx-auto"></div>
+  </div>
+
+  <!-- Station Suggestions -->
+  <datalist id="stations">
+    <option value="Delhi">
+    <option value="Mumbai">
+    <option value="Patna">
+    <option value="Kolkata">
+    <option value="Bhopal">
+    <option value="Chennai">
+    <option value="Hyderabad">
+    <option value="Lucknow">
+    <option value="Jaipur">
+  </datalist>
+
+  <!-- JS -->
+  <script>
+    const dateInput = document.getElementById("dateInput");
+    const trainType = document.getElementById("trainType");
+    const swapBtn = document.getElementById("swapBtn");
+    const searchBtn = document.getElementById("searchTrains");
+    const trainResults = document.getElementById("trainResults");
+    const loader = document.getElementById("loader");
+
+    const trainsData = [
+  {
+    source: "delhi",
+    destination: "mumbai",
+    trainName: "Rajdhani Express",
+    trainNo: "12952",
+    type: "rajdhani",
+    departure: "16:30",
+    arrival: "08:45",
+    seatAvailability: { SL: 50, "1A": 5, "2A": 10, "3A": 20, "3E": 30 },
+    prices: { SL: 600, "1A": 2400, "2A": 1800, "3A": 1400, "3E": 1000 }
+  },
+  {
+    source: "delhi",
+    destination: "mumbai",
+    trainName: "Vande Bharat Express",
+    trainNo: "20901",
+    type: "vande bharat",
+    departure: "06:00",
+    arrival: "14:00",
+    seatAvailability: { SL: 0, "1A": 10, "2A": 30, "3A": 50, "3E": 80 },
+    prices: { SL: 800, "1A": 2600, "2A": 2000, "3A": 1600, "3E": 1200 }
+  },
+  {
+    source: "patna",
+    destination: "kolkata",
+    trainName: "Howrah Express",
+    trainNo: "12345",
+    type: "express",
+    departure: "22:00",
+    arrival: "06:15",
+    seatAvailability: { SL: 150, "1A": 20, "2A": 40, "3A": 70, "3E": 100 },
+    prices: { SL: 400, "1A": 2200, "2A": 1600, "3A": 1300, "3E": 900 }
+  }
+];
+
+    function getDuration(dep, arr) {
+      const [dh, dm] = dep.split(":").map(Number);
+      const [ah, am] = arr.split(":").map(Number);
+      let depMin = dh * 60 + dm;
+      let arrMin = ah * 60 + am;
+      if (arrMin < depMin) arrMin += 24 * 60;
+      const duration = arrMin - depMin;
+      const hrs = Math.floor(duration / 60);
+      const mins = duration % 60;
+      return `${hrs}h ${mins}m`;
+    }
+
+    function searchTrains() {
+      const source = sourceInput.value.trim().toLowerCase();
+      const destination = destInput.value.trim().toLowerCase();
+      const date = dateInput.value;
+      const selectedType = trainType.value;
+
+      trainResults.innerHTML = "";
+      loader.classList.remove("hidden");
+
+      setTimeout(() => {
+        loader.classList.add("hidden");
+
+        if (!source || !destination) {
+          trainResults.innerHTML = `<p class="text-red-500 text-center">Please enter both source and destination.</p>`;
+          return;
+        }
+
+        const results = trainsData.filter(train =>
+          train.source === source &&
+          train.destination === destination &&
+          (selectedType === "all" || train.type === selectedType)
+        );
+
+        if (results.length === 0) {
+          trainResults.innerHTML = `<p class="text-center text-gray-400">No trains found for this route.</p>`;
+        } else {
+    trainResults.innerHTML = results.map(train => `
+  <div class="bg-gray-400 dark:bg-gray-800 p-2 rounded-lg shadow">
+    <h3 class="text-xl font-bold text-black dark:text-white">
+      🚉 ${train.trainName} (${train.trainNo})
+    </h3>
+    <p class="text-gray-800 dark:text-gray-200">
+      🕒 Departure: ${train.departure} | Arrival: ${train.arrival}
+    </p>
+    <p class="text-gray-800 dark:text-gray-200">
+      ⏱️ Duration: ${getDuration(train.departure, train.arrival)}
+    </p>
+    <p class="text-gray-800 dark:text-gray-200">
+      📅 Travel Date: ${date || "N/A"}
+    </p>
+    <p class="text-gray-800 dark:text-gray-200 mt-2">Seats Availability:</p>
+    <div class="grid grid-cols-3 gap-4">
+      ${["SL", "1A", "2A", "3A", "3E"].map(className => `
+        <div class="p-4 rounded-lg text-center ${train.seatAvailability[className] > 0 ? "bg-green-500" : "bg-red-500"} text-white">
+          <p class="font-semibold">${className}</p>
+          <p>Available: ${train.seatAvailability[className]}</p>
+          <p>Price: ₹${train.prices[className]}</p>
+          ${train.seatAvailability[className] > 0
+            ? `<button onclick="bookNow(${train.trainNo}, '${train.trainName}', '${train.source}','${train.departure}', '${train.destination}','${train.arrival}', '${date}', '${className}', ${train.prices[className]},'${getDuration(train.departure, train.arrival)}')"
+                      class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded mt-2">
+                 🎫 Book Now
+               </button>`
+            : `<button class="bg-gray-500 text-white px-4 py-2 rounded mt-2" disabled>Sold Out</button>`
+          }
+        </div>
+      `).join('')}
+    </div>
+  </div>
+`).join('');
+
+        }
+      }, 1000);
+    }
+
+    searchBtn.addEventListener("click", searchTrains);
+
+    swapBtn.addEventListener("click", () => {
+      const temp = sourceInput.value;
+      sourceInput.value = destInput.value;
+      destInput.value = temp;
+    });
+  </script>
+  <script>
+  const voiceBtn = document.getElementById("startVoice");
+  const voiceText = document.getElementById("voiceText");
+  const sourceInput = document.getElementById("sourceInput");
+  const destInput = document.getElementById("destInput");
+
+  // Initialize Speech Recognition
+  const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+  recognition.lang = 'en-US';
+  recognition.interimResults = false;
+  recognition.maxAlternatives = 1;
+
+  // Start Voice Recognition
+  voiceBtn.addEventListener("click", () => {
+    recognition.start();
+    voiceText.textContent = "Listening...";
+  });
+
+  // Handle result of speech recognition
+  recognition.onresult = (event) => {
+    const transcript = event.results[0][0].transcript;
+    voiceText.textContent = `You said: "${transcript}"`;
+
+    // Assign speech result to source and destination inputs
+    const [source, destination] = transcript.split(" to ");
+    sourceInput.value = source.trim();
+    destInput.value = destination.trim();
+
+    // Optionally, automatically trigger search after voice input
+    setTimeout(searchTrains, 500);  // Wait for input before search
+  };
+
+  recognition.onerror = (event) => {
+    voiceText.textContent = `Error occurred: ${event.error}`;
+  };
+
+  function bookNow(trainNo, trainName, source,departure, destination,arrival, date, coach, fare, duration) {
+  const booking = { 
+    trainNo, 
+    trainName, 
+    source, 
+    departure,
+    destination,
+    arrival, 
+    date, 
+    coach, 
+    fare, 
+    duration 
+  };
+  
+  // Store the booking information in localStorage
+  localStorage.setItem('bookingInfo', JSON.stringify(booking));
+  
+  // Check if data is stored
+  console.log('Booking Info:', booking); // Debugging line
+  
+  // Redirect to the booking page
+  window.location.href = 'booking.html';
+}
+ // Dark mode
+   const toggleBtn = document.getElementById('darkModeToggle');
+ toggleBtn.addEventListener('click', () => {
+  const body = document.getElementById('body');
+  const gray = document.getElementById('gray');
+ 
+
+
+  // Toggle dark mode classes
+  body.classList.toggle('bg-gray-900');
+  body.classList.toggle('text-white');
+  gray.classList.toggle('bg-gray-900');
+
+ 
+
+  toggleBtn.innerText = toggleBtn.innerText === '🌙' ? '☀️' : '🌙';
+});
+</script>
+
+  <script src="theme.js"></script>
+</body>
+</html>

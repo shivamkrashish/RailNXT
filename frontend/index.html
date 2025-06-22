@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>RailNXT— Smart Railway</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+  <link rel="stylesheet" href="style.css">
+
+  <style>
+    @keyframes changeBackground {
+      0% {
+        background-image: url('https://static.toiimg.com/thumb/resizemode-4,width-1280,height-720,msid-113384660/113384660.jpg');
+      }
+      33% {
+        background-image: url('https://www.informalnewz.com/wp-content/uploads/2024/11/Vande-Bharat-Metro.jpg');
+      }
+      66% {
+        background-image: url('https://www.hindustantimes.com/ht-img/img/2023/10/21/550x309/20231021-DGZ-SAL-MN-Rapidx-Rail-13-0_1697905357135_1697905376717.JPG');
+      }
+      100% {
+        background-image: url('https://d3lzcn6mbbadaf.cloudfront.net/media/details/91a1a8f6-f55c-487b-8708-1e23d16845ab.jpg');
+      }
+    }
+
+    .train-background {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      animation: changeBackground 15s infinite ease-in-out;
+      background-size: cover;
+      background-position: center;
+      z-index: -1;
+      opacity: 0.4;
+    }
+  </style>
+</head>
+
+<body class="bg-gray-50 text-gray-800 min-h-screen transition-colors duration-300" id="body">
+
+  <!-- Background -->
+  <div class="train-background"></div>
+
+  <!-- Header -->
+  <header id="navbar" class="fixed top-0 left-0 w-full bg-blue-900 text-white p-5 flex flex-col sm:flex-row justify-between items-center shadow-md z-10">
+  <h1 class="text-3xl sm:text-4xl font-bold">🚆RailNXT</h1>
+   <nav class="space-x-3 flex flex-wrap justify-center sm:justify-end">
+      <a href="index.html" class="hover:underline font-semibold">Home</a>
+      <a href="#about" class="hover:text-gray-400">About</a>
+      <a href="track.html" class="hover:underline">Track Train</a>
+      <a href="search_train.html" class="hover:underline">Search Smart Trains</a>
+      <a href="voice-booking.html" class="hover:underline">Voice Booking</a>
+      <button id="darkModeToggle" class="bg-white text-blue-900 px-2 py-1 rounded mt-2 sm:mt-0">🌙</button>
+    </nav>
+  </header>
+<br>
+  <!-- Main Content -->
+  <main id="mainContent"class="max-w-3xl mx-auto px-4 pt-40 pb-32  rounded-xl   min-h-3xl"style="margin-top:20px">
+      <h1 class="text-6xl font-bold mb-6" style="text-align: center;">Welcome to NeoRail</h1>
+      <p class="text-lg mb-6"style="text-align: center;">The Future of Smart Indian Railways</p>
+    <h2 class="text-xl font-semibold mb-6 text-center">🔍 Smart Route Finder</h2>
+    <div class="relative grid gap-4">
+      <div class="grid gap-4 relative">
+
+  <!-- From Station Input with Clear Button -->
+  <div class="relative">
+    <input type="text" id="fromStation" placeholder="From Station" class="p-3 border bg-gray-500 rounded-lg w-full pr-10"/>
+    <button onclick="document.getElementById('fromStation').value=''" type="button"
+      class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-red-500">
+      ❌
+    </button>
+  </div>
+
+  <!-- Swap Button -->
+  <button id="swapBtn"
+    class="absolute top-[43px] right-2 bg-gray-300 hover:bg-gray-400 text-sm px-2 py-1 rounded-full shadow z-10">
+    🔁
+  </button>
+
+  <!-- To Station Input with Clear Button -->
+  <div class="relative">
+    <input type="text" id="toStation" placeholder="To Station" class="p-3 border bg-gray-500  rounded-lg w-full pr-10" />
+    <button onclick="document.getElementById('toStation').value=''" type="button"
+      class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-red-500">
+      ❌
+    </button>
+  </div>
+
+  <!-- Route Button -->
+  <button id="findRouteBtn" class="bg-yellow-500 text-white py-2 rounded hover:bg-yellow-600">
+    Find Route
+  </button>
+
+  <!-- Route Result -->
+  <div id="routeResult" class="mt-4 text-green-600 font-medium hidden"></div>
+</div>
+  </main>
+
+<!-- FEATURES SECTION -->
+<section class="py-18 bg-gray-100 dark:bg-gray-900" id="features">
+  <div class="relative overflow-hidden">
+    <!-- Animated Background Images -->
+    <div class="absolute inset-0 w-full h-full animate-bg-images opacity-20">
+      <img src="https://www.livehindustan.com/lh-img/smart/img/2025/04/23/1200x900/Amrit_Bharat_Express_Train_1745059518056_1745419609338.jpg"
+        alt="Background Image 1"
+        class="absolute w-[150%] h-auto animate-[move1_30s_linear_infinite]" />
+        <img src="https://swarajya.gumlet.io/swarajya/2022-02/e1caf4d5-210c-40ee-8a3e-bc5e2e9a8fb6/Vande_Bharat_train_image.png?w=1200&h=675&auto=format%2Ccompress&fit=max&enlarge=true"
+        alt="Background Image 2"
+        class="absolute w-[150%] h-auto animate-[move2_30s_linear_infinite]" />
+    </div>
+
+    <div class="text-center mb-10 px-9 relative z-10">
+      <h2 class="text-2xl font-bold text-black dark:text-white">Our Features</h2>
+    </div>
+
+    <!-- Sliding Feature Cards -->
+    <div class="relative z-20 overflow-hidden">
+      <div class="flex w-max animate-scroll gap-4">
+        <!-- Group 1 -->
+        <div class="flex gap-4">
+          <div class="bg-white dark:bg-gray-800 p-4 rounded-xl shadow-md min-w-[300px]">
+            <img src="https://static.abhibus.com/img/seo/tarcking-22.png" class="mx-auto mb-2 w-16 h-16" />
+            <h3 class="text-sm font-semibold text-center text-black dark:text-white">Real-Time Tracking</h3>
+            <p class="text-xs text-gray-600 dark:text-gray-300 text-center">Live train status updates.</p>
+          </div>
+          <div class="bg-white dark:bg-gray-800 p-4 rounded-xl shadow-md min-w-[300px]">
+            <img src="https://cdn-icons-png.freepik.com/512/10354/10354675.png" class="mx-auto mb-2 w-16 h-16" />
+            <h3 class="text-sm font-semibold text-center text-black dark:text-white">Smart Route Finder</h3>
+            <p class="text-xs text-gray-600 dark:text-gray-300 text-center">Optimized travel routes.</p>
+          </div>
+          <div class="bg-white dark:bg-gray-800 p-4 rounded-xl shadow-md min-w-[300px]">
+            <img src="https://www.shutterstock.com/image-vector/chat-bot-icon-design-robot-600nw-2476207303.jpg" class="mx-auto mb-2 w-16 h-16" />
+            <h3 class="text-sm font-semibold text-center text-black dark:text-white">AI Chatbot</h3>
+            <p class="text-xs text-gray-600 dark:text-gray-300 text-center">Instant smart support.</p>
+          </div>
+          <div class="bg-white dark:bg-gray-800 p-4 rounded-xl shadow-md min-w-[300px]">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/3/31/Carbon_footprint_scale_of_transportation_means_icon.png" class="mx-auto mb-2 w-16 h-16" />
+            <h3 class="text-sm font-semibold text-center text-black dark:text-white">Carbon Tracking</h3>
+            <p class="text-xs text-gray-600 dark:text-gray-300 text-center">Measure travel impact.</p>
+          </div>
+        </div>
+
+        <!-- Group 2 - Clone for infinite loop -->
+        <div class="flex gap-4">
+          <div class="bg-white dark:bg-gray-800 p-4 rounded-xl shadow-md min-w-[300px]">
+            <img src="https://static.abhibus.com/img/seo/tarcking-22.png" class="mx-auto mb-2 w-16 h-16" />
+            <h3 class="text-sm font-semibold text-center text-black dark:text-white">Real-Time Tracking</h3>
+            <p class="text-xs text-gray-600 dark:text-gray-300 text-center">Live train status updates.</p>
+          </div>
+          <div class="bg-white dark:bg-gray-800 p-4 rounded-xl shadow-md min-w-[300px]">
+            <img src="https://cdn-icons-png.freepik.com/512/10354/10354675.png" class="mx-auto mb-2 w-16 h-16" />
+            <h3 class="text-sm font-semibold text-center text-black dark:text-white">Smart Route Finder</h3>
+            <p class="text-xs text-gray-600 dark:text-gray-300 text-center">Optimized travel routes.</p>
+          </div>
+          <div class="bg-white dark:bg-gray-800 p-4 rounded-xl shadow-md min-w-[300px]">
+            <img src="https://www.shutterstock.com/image-vector/chat-bot-icon-design-robot-600nw-2476207303.jpg" class="mx-auto mb-2 w-16 h-16" />
+            <h3 class="text-sm font-semibold text-center text-black dark:text-white">AI Chatbot</h3>
+            <p class="text-xs text-gray-600 dark:text-gray-300 text-center">Instant smart support.</p>
+          </div>
+          <div class="bg-white dark:bg-gray-800 p-4 rounded-xl shadow-md min-w-[300px]">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/3/31/Carbon_footprint_scale_of_transportation_means_icon.png" class="mx-auto mb-2 w-16 h-16" />
+            <h3 class="text-sm font-semibold text-center text-black dark:text-white">Carbon Tracking</h3>
+            <p class="text-xs text-gray-600 dark:text-gray-300 text-center">Measure travel impact.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <br>
+    <br>
+  </div>
+</section>
+
+
+<!-- CSS for animations -->
+<style>
+  @keyframes move1 {
+    0% {
+      transform: translateX(0);
+    }
+    100% {
+      transform: translateX(-50%);
+    }
+  }
+
+  @keyframes move2 {
+    0% {
+      transform: translateX(0);
+    }
+    100% {
+      transform: translateX(50%);
+    }
+  }
+
+  @keyframes scroll {
+    0% {
+      transform: translateX(0);
+    }
+    100% {
+      transform: translateX(-50%);
+    }
+  }
+
+  .animate-bg-images img {
+    animation-timing-function: linear;
+  }
+
+  .animate-scroll {
+    animation: scroll 10s linear infinite;
+  }
+
+  .animate-[move1_10s_linear_infinite] {
+    animation: move1 10s linear infinite;
+  }
+
+  .animate-[move2_10s_linear_infinite] {
+    animation: move2 10s linear infinite;
+  }
+</style>
+ <!-- About Section -->
+  <section id="about" class="py-16 bg-white">
+    <div class="container mx-auto text-center">
+      <h2 class="text-3xl font-bold mb-6">About RailNXT </h2>
+      <p class="text-lg text-gray-700">RailNXT is revolutionizing the Indian railway system by introducing smart features such as AI, real-time tracking, and sustainable travel solutions. Our goal is to provide a seamless and environmentally friendly experience for passengers.</p>
+     <!-- Chatbot Toggle Button -->
+  <button id="chatbotToggle" class="fixed bottom-5 right-5 bg-blue-700 text-white p-3 rounded-full shadow-lg hover:bg-blue-800 z-50">
+    💬
+  </button>
+
+  <!-- Chatbot Window -->
+  <div id="chatbotWindow" class="fixed bottom-20 right-5 bg-white border rounded-lg shadow-lg w-80 max-h-[500px] hidden z-50 flex flex-col">
+    <!-- Header with Close & Clear -->
+    <div class="bg-blue-700 text-white px-4 py-2 rounded-t-lg flex justify-between items-center">
+      <span class="font-semibold">NeoRail AI Chatbot</span>
+      <div class="space-x-2">
+        <!-- Clear chat -->
+        <button id="clearChatBtn" class="hover:text-gray-300" title="Clear Chat">🗑️</button>
+        <!-- Close window -->
+        <button onclick="document.getElementById('chatbotWindow').style.display='none'" class="hover:text-gray-300" title="Close">✖</button>
+      </div>
+    </div>
+
+    <!-- Chat Log -->
+    <div id="chatLog" class="flex-1 p-3 overflow-y-auto text-sm text-gray-800 bg-gray-50"></div>
+
+    <!-- Input Area -->
+    <div class="p-2 border-t flex">
+      <input type="text" id="userInput" placeholder="Ask something..." class="flex-1 px-3 py-2 text-black rounded-l-md focus:outline-none" />
+      <button onclick="sendMessage()" class="bg-blue-700 text-white px-4 py-2 rounded-r-md hover:bg-blue-800">Send</button>
+    </div>
+  </div>
+
+    </div>
+  </section>
+
+
+  <!-- Footer -->
+  <footer class=" bottom-0 left-0 w-full bg-blue-900 text-center p-5 text-sm text-white shadow-inner z-10">
+    &copy; 2025 RailNXT. All rights reserved.
+    <div class="space-x-2 mt-2">
+      <a href="#" class="hover:text-gray-400">Facebook</a>
+      <a href="#" class="hover:text-gray-400">Twitter</a>
+      <a href="#" class="hover:text-gray-400">Instagram</a>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script>
+    // Swap stations
+    document.getElementById('swapBtn').addEventListener('click', () => {
+      const fromInput = document.getElementById('fromStation');
+      const toInput = document.getElementById('toStation');
+      const temp = fromInput.value;
+      fromInput.value = toInput.value;
+      toInput.value = temp;
+    });
+
+    // Dark mode
+   const toggleBtn = document.getElementById('darkModeToggle');
+ toggleBtn.addEventListener('click', () => {
+  const body = document.getElementById('body');
+  const main = document.getElementById('mainContent');
+
+
+  // Toggle dark mode classes
+  body.classList.toggle('bg-gray-900');
+  body.classList.toggle('text-black');
+
+  main.classList.toggle('text-white');
+
+  toggleBtn.innerText = toggleBtn.innerText === '🌙' ? '☀️' : '🌙';
+});
+
+
+    // Dummy route logic
+    const dummyRoutes = {
+      "madhubani-darbhanga": ["Madhubani", "Pandaul", "Sakri Junction", "Laheriasarai", "Darbhanga"],
+      "patna-darbhanga": ["Patna", "Bakhtiyarpur", "Mokama", "Samastipur", "Darbhanga"],
+      "bhopal-delhi": ["Bhopal", "Jhansi", "Agra Cantt", "New Delhi"]
+    };
+
+    document.getElementById('findRouteBtn').addEventListener('click', () => {
+      const from = document.getElementById('fromStation').value.trim().toLowerCase();
+      const to = document.getElementById('toStation').value.trim().toLowerCase();
+      const resultDiv = document.getElementById('routeResult');
+
+      if (!from || !to) {
+        alert('Please enter both stations.');
+        return;
+      }
+
+      const routeKey = `${from}-${to}`;
+      const route = dummyRoutes[routeKey];
+
+      resultDiv.classList.remove('hidden');
+
+      if (route) {
+        resultDiv.innerHTML = `
+          <p class="mb-2 text-blue-700">✅ Route found from <strong>${from}</strong> to <strong>${to}</strong>:</p>
+          <ul class="list-disc pl-4 text-green">
+            ${route.map(station => `<li>${station}</li>`).join('')}
+          </ul>
+        `;
+      } else {
+        resultDiv.innerHTML = `❌ No direct route found from <strong>${from}</strong> to <strong>${to}</strong>. Please try another combination.`;
+      }
+    });
+  </script>
+  <script>
+  const chatBox = document.getElementById("chatBox");
+  const chatForm = document.getElementById("chatForm");
+  const userInput = document.getElementById("userInput");
+
+  function appendMessage(sender, message) {
+    const div = document.createElement("div");
+    div.className = "mb-2";
+    div.innerHTML = `<strong>${sender}:</strong> ${message}`;
+    chatBox.appendChild(div);
+    chatBox.scrollTop = chatBox.scrollHeight;
+  }
+
+  chatForm.addEventListener("submit", async function (e) {
+    e.preventDefault();
+    const question = userInput.value.trim();
+    if (!question) return;
+
+    appendMessage("You", question);
+    userInput.value = "";
+
+    try {
+      const res = await fetch("http://localhost:5000/api/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message: question }),
+      });
+
+      const data = await res.json();
+      appendMessage("NeoBot", data.reply);
+    } catch (error) {
+      appendMessage("NeoBot", "❌ Server not responding.");
+    }
+  });
+</script>
+<!-- AOS JS -->
+<script src="https://unpkg.com/aos@2.3.4/dist/aos.js"></script>
+<script>
+  AOS.init({
+    duration: 1000,
+    once: true,
+  });
+</script>
+<script>
+  const swapBtn = document.getElementById('swapBtn');
+  const navbar = document.getElementById('navbar');
+  const content = document.querySelector('.content');
+
+  // Listen for scroll events
+  window.addEventListener('scroll', () => {
+    if (window.scrollY > navbar.offsetHeight) {
+      content.classList.add('scrolled');
+    } else {
+      content.classList.remove('scrolled');
+    }
+  });
+</script>
+<script>
+  const darkModeToggle = document.getElementById("darkModeToggle");
+  const aboutSection = document.getElementById("about");
+  const featuresSection = document.getElementById("features");
+
+  darkModeToggle.addEventListener("click", () => {
+    // 🔄 Toggle About Section
+    aboutSection.classList.toggle("bg-white");
+    aboutSection.classList.toggle("bg-gray-600");
+    aboutSection.classList.toggle("text-gray-800");
+    aboutSection.classList.toggle("text-white");
+
+    const aboutPara = aboutSection.querySelector("p");
+    if (aboutPara) {
+      aboutPara.classList.toggle("text-gray-700");
+      aboutPara.classList.toggle("text-gray-300");
+    }
+
+    // 🔄 Toggle Features Section
+    featuresSection.classList.toggle("bg-gray-100");
+    featuresSection.classList.toggle("bg-gray-900");
+
+    const heading = featuresSection.querySelector("h2");
+    heading.classList.toggle("text-black");
+    heading.classList.toggle("text-white");
+
+    const cards = featuresSection.querySelectorAll(".bg-white, .dark\\:bg-gray-800");
+    cards.forEach(card => {
+      card.classList.toggle("bg-white");
+      card.classList.toggle("bg-gray-800");
+    });
+
+    const titles = featuresSection.querySelectorAll("h3");
+    titles.forEach(title => {
+      title.classList.toggle("text-black");
+      title.classList.toggle("text-white");
+    });
+
+    const texts = featuresSection.querySelectorAll("p");
+    texts.forEach(text => {
+      text.classList.toggle("text-gray-600");
+      text.classList.toggle("text-gray-300");
+    });
+  });
+</script>
+ <!-- JavaScript Logic -->
+  <script>
+    // Toggle chatbot window
+    document.getElementById('chatbotToggle').addEventListener('click', () => {
+      const win = document.getElementById('chatbotWindow');
+      win.style.display = (win.style.display === 'flex') ? 'none' : 'flex';
+    });
+
+    // Clear chat log
+    document.getElementById('clearChatBtn').addEventListener('click', () => {
+      document.getElementById('chatLog').innerHTML = '';
+    });
+
+    // Send message logic
+    function sendMessage() {
+      const input = document.getElementById('userInput');
+      const chatLog = document.getElementById('chatLog');
+      const userMsg = input.value.trim();
+      if (!userMsg) return;
+
+      // Append user message
+      chatLog.innerHTML += `<div class="mb-2"><strong>You:</strong> ${userMsg}</div>`;
+
+      // Mock bot response
+      let response = "I'm still learning. Please try using the menu options.";
+      const msg = userMsg.toLowerCase();
+      if (msg.includes("hello") || msg.includes("hi")) {
+        response = "Hello! I'm NeoRail Bot 🤖. How can I assist you today?";
+      } else if (msg.includes("train")) {
+        response = "You can find trains using the Smart Route Finder or Real-Time Tracking.";
+      } else if (msg.includes("ticket")) {
+        response = "Try the Voice Booking system to book your tickets easily.";
+      } else if (msg.includes("track") || msg.includes("delay")) {
+        response = "Use our Delay Prediction and Real-Time Tracking features to stay updated.";
+      }
+
+      // Append bot response
+      setTimeout(() => {
+        chatLog.innerHTML += `<div class="mb-2 text-blue-800"><strong>NeoRail Bot:</strong> ${response}</div>`;
+        chatLog.scrollTop = chatLog.scrollHeight;
+      }, 500);
+
+      input.value = '';
+    }
+  </script>
+
+  <script src="theme.js"></script>
+</body>
+</html>

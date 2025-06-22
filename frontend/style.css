@@ -1,0 +1,65 @@
+/* Navbar */
+#navbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  /* background-color: #333; */
+  color: white;
+  z-index: 1000;
+}
+
+/* Station container */
+.station-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 100px; /* Adjust this value based on navbar height */
+}
+
+/* Swap Button */
+#swapBtn {
+  padding: 8px 12px;
+  /* background-color: #007bff; */
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: transform 0.3s ease;
+  margin-top: -83px;
+}
+
+/* Position the swap button below navbar by default */
+#swapBtn {
+  position: absolute;
+  top: 120px; /* Adjust this value to match with navbar height */
+}
+
+/* Make button fixed when scrolled past the navbar */
+.scrolled #swapBtn {
+  position: fixed;
+  top: 50px; /* Adjust based on navbar height */
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+  .animate-slider {
+    animation: slide 5s linear infinite;
+  }
+
+  @keyframes slide {
+    0% {
+      transform: translateX(0);
+    }
+    100% {
+      transform: translateX(-50%);
+    }
+  }
+
+ #vnav{
+  margin-top: 100px;
+ }
+ #trainResults{
+  background-color: aqua;
+ }

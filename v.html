@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>NeoRail – Train Tracker</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY_HERE"></script>
+</head>
+<body class="bg-gray-100 min-h-screen p-4">
+  <div class="max-w-3xl mx-auto bg-white p-6 rounded-lg shadow-lg">
+    <h1 class="text-3xl font-bold mb-4 text-center">🚆 NeoRail – Train Tracker</h1>
+
+    <div class="flex flex-col md:flex-row gap-4">
+      <input id="source" type="text" placeholder="Source Station" class="flex-1 p-2 border rounded" />
+      <button onclick="swapStations()" class="px-2 py-2 bg-gray-300 rounded">⇄</button>
+      <input id="destination" type="text" placeholder="Destination Station" class="flex-1 p-2 border rounded" />
+    </div>
+
+    <div class="mt-4 flex flex-col md:flex-row gap-4">
+      <input id="travelDate" type="date" class="p-2 border rounded w-full md:w-1/2" />
+      <button onclick="trackTrain()" class="bg-blue-600 text-white px-4 py-2 rounded w-full md:w-1/2">
+        🔍 Track Train
+      </button>
+    </div>
+
+    <div class="flex items-center gap-2 mt-4">
+      <button onclick="startVoiceForRoute()" class="bg-blue-600 text-white px-4 py-2 rounded">
+        🎤 Voice Input (From & To)
+      </button>
+    </div>
+
+    <div id="result" class="mt-6 hidden"></div>
+  </div>
+
+  <script>
+    let voiceStage = 0;
+
+    const trainRoutes = [
+      {
+        source: "Madhubani",
+        destination: "Patna",
+        intermediates: ["Pandaul", "Sakri", "Darbhanga", "Laheriasarai", "Samastipur", "Barauni", "Mokama", "Barh", "Danapur", "Patliputra"]
+      },
+      // Add more predefined routes here...
+    ];
+
+    function getIntermediateStations(source, destination) {
+      const route = trainRoutes.find(r =>
+        (r.source.toLowerCase() === source.toLowerCase() && r.destination.toLowerCase() === destination.toLowerCase()) ||
+        (r.destination.toLowerCase() === source.toLowerCase() && r.source.toLowerCase() === destination.toLowerCase())
+      );
+
+      if (!route) return ["No intermediate stations found"];
+
+      return route.source.toLowerCase() === source.toLowerCase()
+        ? route.intermediates
+        : [...route.intermediates].reverse();
+    }
+
+    function trackTrain() {
+      const source = document.getElementById('source').value.trim();
+      const dest = document.getElementById('destination').value.trim();
+      const date = document.getElementById('travelDate').value;
+
+      if (!source || !dest || !date) {
+        alert('Please enter source, destination, and travel date!');
+        return;
+      }
+
+      const intermediateStations = getIntermediateStations(source, dest);
+      const stations = [source, ...intermediateStations, dest];
+      const randomLocation = stations[Math.floor(Math.random() * stations.length)];
+      const isOnTime = Math.random() < 0.8;
+
+      const trains = [
+        {
+          number: "12345",
+          name: "Rajdhani Express",
+          location: randomLocation,
+          status: isOnTime ? "On Time" : "Delayed",
+          delay: isOnTime ? "0 min" : `${Math.floor(Math.random() * 60) + 5} min`
+        }
+      ];
+
+      const resultDiv = document.getElementById('result');
+      resultDiv.classList.remove('hidden');
+
+resultDiv.innerHTML = `
+  <h2 class="text-xl font-semibold mb-2">Available Trains</h2>
+  <div class="grid gap-4">
+    ${trains.map(train => `
+      <div class="bg-white p-4 border rounded shadow">
+        <p><strong>Train No:</strong> ${train.number}</p>
+        <p><strong>Name:</strong> ${train.name}</p>
+        <p><strong>Current Location:</strong> ${train.location}
+          <img src="https://cdn-icons-png.flaticon.com/512/8137/8137696.png" alt="Train" class="inline-block w-6 h-6 ml-2" />
+        </p>
+        <p><strong>Status:</strong> 
+          <span class="${train.status === 'On Time' ? 'text-green-600' : 'text-red-600'}">${train.status}</span>
+        </p>
+        <p><strong>Delay:</strong> ${train.delay}</p>
+
+        <div class="mt-3">
+          <p class="font-semibold">Intermediate Stations:</p>
+          <div class="flex items-center gap-2 mt-1 flex-wrap">
+            ${stations.map((st, index) => `
+              <div class="station-container flex items-center gap-2">
+                <span class="station ${
+                  st === train.location 
+                    ? 'bg-green-600 text-white font-bold' 
+                    : 'bg-blue-300 text-black'
+                } px-2 py-1 rounded flex items-center">
+                  ${st === train.location ? '🚆' : ''} ${st}
+                </span>
+                ${index < stations.length - 1 ? '<span class="line w-6 h-1 bg-gray-400"></span>' : ''}
+              </div>
+            `).join('')}
+          </div>
+        </div>
+
+        <button onclick="openMap('${train.location}')" class="mt-3 bg-blue-600 text-white px-3 py-1 rounded">
+          📍 View Live Map
+        </button>
+      </div>
+    `).join('')}
+  </div>
+`;
+
+
+    }
+
+    function swapStations() {
+      const source = document.getElementById('source');
+      const dest = document.getElementById('destination');
+      [source.value, dest.value] = [dest.value, source.value];
+    }
+
+    function openMap(location) {
+      const mapUrl = `https://www.google.com/maps/search/${encodeURIComponent(location)}`;
+      window.open(mapUrl, '_blank');
+    }
+
+    function startVoiceForRoute() {
+      const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+      recognition.lang = "en-IN";
+      recognition.interimResults = false;
+      recognition.maxAlternatives = 1;
+
+      const speak = (msg) => {
+        const utterance = new SpeechSynthesisUtterance(msg);
+        speechSynthesis.speak(utterance);
+      };
+
+      recognition.onresult = (event) => {
+        const transcript = event.results[0][0].transcript.trim();
+        if (voiceStage === 0) {
+          document.getElementById("source").value = transcript;
+          voiceStage = 1;
+          speak("Now say your destination station");
+          setTimeout(() => recognition.start(), 800);
+        } else if (voiceStage === 1) {
+          document.getElementById("destination").value = transcript;
+          voiceStage = 0;
+          speak("Source and destination filled. You can now track the train.");
+        }
+      };
+
+      recognition.onerror = (event) => {
+        alert("Voice recognition error: " + event.error);
+        voiceStage = 0;
+      };
+
+      speak("Say your source station");
+      setTimeout(() => recognition.start(), 800);
+    }
+  </script>
+</body>
+</html>

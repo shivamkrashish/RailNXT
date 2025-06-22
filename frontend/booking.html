@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>RailNXT - Confirm Booking</title>
+
+  <!-- Tailwind Config -->
+  <script>
+    tailwind = { config: { darkMode: 'class' } }
+  </script>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-gray-50 text-gray-800 min-h-screen transition-colors duration-300" id="body"></body>
+
+  <!-- Header -->
+  <header class="fixed top-0 w-full bg-blue-900 text-white p-5 flex justify-between items-center shadow z-10">
+    <h1 class="text-2xl font-bold">🚆RailNXT</h1>
+    
+     <button id="darkModeToggle" class="bg-white text-blue-900 px-2 py-1 rounded mt-2 sm:mt-0">🌙</button>
+  </header>
+
+  <div class="mt-24 container mx-auto max-w-md bg-white dark:bg-gray-800 p-6 rounded shadow"id="confirm">
+    <h1 class="text-2xl font-bold mb-4">🎫 Confirm Booking</h1>
+
+    <!-- Booking Details -->
+    <div id="details" class="space-y-2 mb-6">
+      <!-- Injected via JS -->
+    </div>
+
+    <!-- Passenger Form -->
+    <div id="passengerForm" class="space-y-4 mb-6">
+      <div>
+        <label for="passengerName" class="block font-semibold mb-1">Passenger Name</label>
+        <input type="text" id="passengerName" class="w-full border p-2 rounded" placeholder="Enter your name"/>
+      </div>
+      <div>
+        <label for="passengerAge" class="block font-semibold mb-1">Age</label>
+        <input type="number" id="passengerAge" class="w-full border p-2 rounded" placeholder="Enter your age"/>
+      </div>
+      <div>
+        <label for="passengerMobile" class="block font-semibold mb-1">Mobile Number</label>
+        <input type="tel" id="passengerMobile" class="w-full border p-2 rounded" placeholder="10-digit mobile no." maxlength="10" />
+      </div>
+      <div class="flex items-center">
+        <input type="checkbox" id="insurance" class="mr-2"/>
+        <label for="insurance" class="font-semibold">Add Travel Insurance (₹20)</label>
+      </div>
+      
+      <!-- Payment Method -->
+      <div>
+        <label class="block font-semibold mb-1">Payment Method</label>
+        <select id="paymentMethod" class="w-full border p-2 rounded" onchange="togglePaymentFields()">
+          <option value="">Select</option>
+          <option value="upi">UPI</option>
+          <option value="card">Card</option>
+        </select>
+      </div>
+
+      <!-- UPI Field -->
+      <div id="upiField" class="hidden">
+        <label for="upiId" class="block font-semibold mb-1 mt-2">UPI ID</label>
+        <input type="text" id="upiId" class="w-full border p-2 rounded" placeholder="example@upi" />
+      </div>
+
+      <!-- Card Fields -->
+      <div id="cardFields" class="hidden space-y-2 mt-2">
+        <div>
+          <label for="cardNumber" class="block font-semibold mb-1">Card Number</label>
+          <input type="text" id="cardNumber" class="w-full border p-2 rounded" maxlength="16" placeholder="XXXX XXXX XXXX XXXX" />
+        </div>
+        <div>
+          <label for="cardExpiry" class="block font-semibold mb-1">Expiry Date</label>
+          <input type="text" id="cardExpiry" class="w-full border p-2 rounded" placeholder="MM/YY" />
+        </div>
+        <div>
+          <label for="cardCVV" class="block font-semibold mb-1">CVV</label>
+          <input type="text" id="cardCVV" class="w-full border p-2 rounded" maxlength="3" placeholder="123" />
+        </div>
+      </div>
+    </div>
+
+    <button id="confirmBtn" class="w-full bg-green-600 hover:bg-green-700 text-white py-2 rounded">
+      ✅ Confirm Booking
+    </button>
+  </div>
+
+  <script>
+    // Redirect back to search page
+    function goHome() {
+      window.location = 'index.html';
+    }
+
+    // Load booking info from localStorage
+    const info = JSON.parse(localStorage.getItem('bookingInfo') || 'null');
+    const details = document.getElementById('details');
+    const passengerForm = document.getElementById('passengerForm');
+    const confirmBtn = document.getElementById('confirmBtn');
+
+    if (!info) {
+      details.innerHTML = '<p class="text-red-600">No booking data found. Please go back and select a train.</p>';
+      passengerForm.style.display = 'none';
+      confirmBtn.style.display = 'none';
+    } else {
+      const baseFare = info.fare;
+      details.innerHTML = `
+        <p><strong>Train:</strong> ${info.trainName} (${info.trainNo})</p>
+        <p><strong>Route:</strong> ${info.source}(${info.departure}) ➝ ${info.destination}(${info.arrival})</p>
+        <p><strong>Date:</strong> ${info.date}</p>
+        <p><strong>Duration:</strong> ${info.duration}</p>
+        <p><strong>Coach:</strong> ${info.coach}</p>
+        <p><strong>Fare:</strong> ₹${baseFare}</p>
+      `;
+    }
+
+    // Toggle UPI/ Card fields
+    function togglePaymentFields() {
+      const method = document.getElementById('paymentMethod').value;
+      document.getElementById('upiField').classList.add('hidden');
+      document.getElementById('cardFields').classList.add('hidden');
+
+      if (method === 'upi') {
+        document.getElementById('upiField').classList.remove('hidden');
+      } else if (method === 'card') {
+        document.getElementById('cardFields').classList.remove('hidden');
+      }
+    }
+  // Function to generate a random PNR number
+  function generatePNR() {
+  let pnr = '';
+  for (let i = 0; i < 10; i++) {
+    pnr += Math.floor(Math.random() * 10);  // Generate a random digit (0-9)
+  }
+  return pnr;
+}
+// Function to generate a random seat number
+  function generateSeatNumber(coach) {
+    // Simulate seat numbers based on the coach type (e.g., A1-23, B2-15)
+    const seatNumber = Math.floor(Math.random() * 50) + 1; // Random seat between 1 and 50
+    return `${coach}-${seatNumber}`;
+  }
+  // On confirm, validate inputs, compute insurance, show alert, and cleanup
+  confirmBtn.addEventListener('click', () => {
+  const name = document.getElementById('passengerName').value.trim();
+  const age = document.getElementById('passengerAge').value.trim();
+  const mobile = document.getElementById('passengerMobile').value.trim();
+  const ins = document.getElementById('insurance').checked;
+  const method = document.getElementById('paymentMethod').value;
+  let totalFare = info.fare;
+
+  if (!name || !age || !mobile.match(/^[6-9]\d{9}$/)) {
+    alert('⚠️ कृपया सभी विवरण सही भरें। मोबाइल 10 अंकों का नंबर होना चाहिए।');
+    return;
+  }
+
+  if (!method) {
+    alert('⚠️ कृपया भुगतान विधि चुनें।');
+    return;
+  }
+
+  if (method === 'upi') {
+    const upiId = document.getElementById('upiId').value.trim();
+    if (!upiId.match(/^\w+@\w+$/)) {
+      alert('⚠️ कृपया मान्य UPI ID दर्ज करें।');
+      return;
+    }
+  } else if (method === 'card') {
+    const cardNumber = document.getElementById('cardNumber').value.trim();
+    const expiry = document.getElementById('cardExpiry').value.trim();
+    const cvv = document.getElementById('cardCVV').value.trim();
+    if (!cardNumber.match(/^\d{16}$/) || !expiry.match(/^\d{2}\/\d{2}$/) || !cvv.match(/^\d{3}$/)) {
+      alert('⚠️ कृपया सभी कार्ड विवरण सही भरें।');
+      return;
+    }
+  }
+
+  if (ins) totalFare += 20;
+  const pnr = generatePNR();
+  const seatNumber = generateSeatNumber(info.coach);
+  const payText = method === 'upi' 
+    ? `UPI (ID: ${document.getElementById('upiId').value.trim()})` 
+    : `Card`;
+
+  // Hide form and show ticket
+  passengerForm.style.display = 'none';
+  confirmBtn.style.display = 'none';
+
+  document.getElementById('details').innerHTML = `
+    <div class="bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 p-4 rounded-lg shadow text-sm space-y-2">
+      <h2 class="text-xl font-bold text-center">🎟️ E-Ticket</h2>
+      <p><strong>PNR:</strong> ${pnr}</p>
+      <p><strong>Passenger:</strong> ${name}, Age: ${age}</p>
+      <p><strong>Mobile:</strong> ${mobile}</p>
+      <p><strong>Train:</strong> ${info.trainName} (${info.trainNo})</p>
+      <p><strong>Route:</strong> ${info.source}(${info.departure}) ➝ ${info.destination}(${info.arrival})</p> 
+      <p><strong>Duration:</strong> ${info.duration}</p>
+      <p><strong>Date:</strong> ${info.date}</p>
+      <p><strong>Coach:</strong> ${info.coach}</p>
+      <p><strong>Seat:</strong> ${seatNumber}</p>
+      <p><strong>Fare:</strong> ₹${info.fare}</p>
+      <p><strong>${ins ? 'Insurance' : 'No Insurance'}</strong> ${ins ? '(+₹20)' : ''}</p>
+      <p class="font-bold text-green-600">Total Paid: ₹${totalFare}</p>
+      <p><strong>Payment:</strong> ${payText}</p>
+      <div class="mt-4 text-center">
+        <button onclick="window.print()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded">🖨️ Print Ticket</button>
+        <button onclick="goHome()" class="ml-2 bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded">🏠 Go Home</button>
+      </div>
+    </div>
+  `;
+
+  localStorage.removeItem('bookingInfo');
+});
+
+ // Dark mode
+   const toggleBtn = document.getElementById('darkModeToggle');
+ toggleBtn.addEventListener('click', () => {
+  const body = document.getElementById('body');
+  const confirm = document.getElementById('confirm');
+
+ 
+
+
+  // Toggle dark mode classes
+  body.classList.toggle('bg-gray-900');
+  body.classList.toggle('text-white');
+  confirm.classList.toggle('bg-gray-400');
+  confirm.classList.toggle('text-black');
+ 
+
+ 
+
+  toggleBtn.innerText = toggleBtn.innerText === '🌙' ? '☀️' : '🌙';
+});
+</script>
+</body>
+</html>
